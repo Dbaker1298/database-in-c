@@ -27,7 +27,8 @@ int main(int argc, char *argv[]) {
         break;
       case '?':
         printf("Unknown option -%c\n", optopt);
-        break;
+        print_usage(argv);
+        return -1;
       default:
         return -1;
     }
