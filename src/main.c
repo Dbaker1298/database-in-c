@@ -24,6 +24,11 @@ int main(int argc, char *argv[]) {
         break;
       case 'f':
         filepath = optarg;
+        if (filepath[0] == '\0') {
+          printf("Filepath cannot be empty\n");
+          print_usage(argv);
+          return 1;
+        }
         break;
       case '?':
         printf("Unknown option -%c\n", optopt);
