@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     printf("Filepath is a required argument\n");
     print_usage(argv);
 
-    return 0;
+    return 1;
   }
 
   printf("Newfile: %d\n", newfile);
