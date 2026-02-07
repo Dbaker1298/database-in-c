@@ -85,7 +85,11 @@ int main(int argc, char *argv[]) {
   printf("Newfile: %d\n", newfile);
   printf("Filepath: %s\n", filepath);
 
-  output_file(dbfd, dbhdr);
+  if (output_file(dbfd, dbhdr) == STATUS_ERROR) {
+    printf("Failed to write database header\n");
+    ret = EXIT_FAILURE;
+    goto cleanup;
+  }
 
 cleanup:
   if (dbfd != -1) {
