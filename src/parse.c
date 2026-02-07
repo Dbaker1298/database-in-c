@@ -10,18 +10,47 @@
 #include "parse.h"
 
 int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *addstring) {
+  if (addstring == NULL) {
+    printf("add_employee called with NULL addstring\n");
+    return STATUS_ERROR;
+  }
+
+  if (dbhdr == NULL || employees == NULL) {
+    printf("add_employee called with NULL dbhdr or employees\n");
+    return STATUS_ERROR;
+  }
+
+  if (dbhdr->count == 0) {
+    printf("add_employee called with count of 0\n");
+    return STATUS_ERROR;
+  }
+
   printf("Did we get the string?: %s\n", addstring);
 
-  char *name = strtok(addstring, ",");
+  /* Work on a local copy so we don't modify the caller's buffer */
+  char *input_copy = strdup(addstring);
+  if (input_copy == NULL) {
+    printf("Failed to allocate memory for input copy\n");
+    return STATUS_ERROR;
+  }
+
+  char *name = strtok(input_copy, ",");
   char *addr = strtok(NULL, ",");
-  char *hours =strtok(NULL, ",");
+  char *hours = strtok(NULL, ",");
+
+  if (name == NULL || addr == NULL || hours == NULL) {
+    printf("Invalid employee string, expected 3 comma-separated fields: '%s'\n", addstring);
+    free(input_copy);
+    return STATUS_ERROR;
+  }
 
   printf("Verifying name, addr, hours: %s %s %s\n", name, addr, hours);
 
-  strncpy(employees[dbhdr->count-1].name, name, sizeof(employees[dbhdr->count-1].name));
-  strncpy(employees[dbhdr->count-1].address, addr, sizeof(employees[dbhdr->count-1].address));
+  snprintf(employees[dbhdr->count-1].name, sizeof(employees[dbhdr->count-1].name), "%s", name);
+  snprintf(employees[dbhdr->count-1].address, sizeof(employees[dbhdr->count-1].address), "%s", addr);
   employees[dbhdr->count-1].hours = atoi(hours);
 
+  free(input_copy);
 
   return STATUS_SUCCESS;
 }
