@@ -3,7 +3,7 @@
 
 #define HEADER_MAGIC 0x4c4c4144
 #define NAME_LEN 256
-#define ADDRES_LEN 256
+#define ADDRESS_LEN 256
 
 struct dbheader_t {
   unsigned int magic;
@@ -14,7 +14,7 @@ struct dbheader_t {
 
 struct employee_t {
   char name[NAME_LEN];
-  char address[ADDRES_LEN];
+  char address[ADDRESS_LEN];
   unsigned int hours;
 };
 
