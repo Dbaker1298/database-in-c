@@ -15,6 +15,16 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *a
     return STATUS_ERROR;
   }
 
+  if (dbhdr == NULL || employees == NULL) {
+    printf("add_employee called with NULL dbhdr or employees\n");
+    return STATUS_ERROR;
+  }
+
+  if (dbhdr->count == 0) {
+    printf("add_employee called with count of 0\n");
+    return STATUS_ERROR;
+  }
+
   printf("Did we get the string?: %s\n", addstring);
 
   /* Work on a local copy so we don't modify the caller's buffer */
@@ -36,10 +46,8 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *a
 
   printf("Verifying name, addr, hours: %s %s %s\n", name, addr, hours);
 
-  strncpy(employees[dbhdr->count-1].name, name, sizeof(employees[dbhdr->count-1].name));
-  employees[dbhdr->count-1].name[sizeof(employees[dbhdr->count-1].name) - 1] = '\0';
-  strncpy(employees[dbhdr->count-1].address, addr, sizeof(employees[dbhdr->count-1].address));
-  employees[dbhdr->count-1].address[sizeof(employees[dbhdr->count-1].address) - 1] = '\0';
+  snprintf(employees[dbhdr->count-1].name, sizeof(employees[dbhdr->count-1].name), "%s", name);
+  snprintf(employees[dbhdr->count-1].address, sizeof(employees[dbhdr->count-1].address), "%s", addr);
   employees[dbhdr->count-1].hours = atoi(hours);
 
   free(input_copy);
