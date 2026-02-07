@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <limits.h>
+#include <stdint.h>
 
 #include "common.h"
 #include "parse.h"
@@ -86,7 +87,14 @@ int read_employees(int fd, struct dbheader_t *dbhdr, struct employee_t **employe
 
   struct employee_t *employees = calloc(count, sizeof(struct employee_t));
   if (employees == NULL) {
-    printf("calloc failed to create the db header\n");
+    printf("Failed to allocate memory for employee records\n");
+    return STATUS_ERROR;
+  }
+
+  /* Check for potential integer overflow before multiplication */
+  if (count > SIZE_MAX / sizeof(struct employee_t)) {
+    printf("Employee count too large, would cause integer overflow\n");
+    free(employees);
     return STATUS_ERROR;
   }
 
