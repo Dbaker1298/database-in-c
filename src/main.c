@@ -16,6 +16,8 @@ void print_usage(char *argv[]) {
 
 int main(int argc, char *argv[]) {
   char *filepath = NULL;
+  char *addstring = NULL;
+
   bool newfile = false;
 
   int c;
@@ -23,9 +25,11 @@ int main(int argc, char *argv[]) {
   int dbfd = -1;
 
   struct dbheader_t *dbhdr = NULL;
+  struct employee_t *employees = NULL;
+
   int ret = EXIT_SUCCESS;
 
-  while ((c = getopt(argc, argv, "nf:")) != -1) {
+  while ((c = getopt(argc, argv, "nf:a:")) != -1) {
     switch (c) {
       case 'n':
         newfile = true;
@@ -37,6 +41,9 @@ int main(int argc, char *argv[]) {
           print_usage(argv);
           return EXIT_FAILURE;
         }
+        break;
+      case 'a':
+        addstring = optarg;
         break;
       case '?':
         printf("Unknown option -%c\n", optopt);
@@ -85,7 +92,19 @@ int main(int argc, char *argv[]) {
   printf("Newfile: %d\n", newfile);
   printf("Filepath: %s\n", filepath);
 
-  if (output_file(dbfd, dbhdr) == STATUS_ERROR) {
+  if (read_employees(dbfd, dbhdr, &employees) == STATUS_ERROR) {
+    printf("Failed to read employees\n");
+    ret = EXIT_FAILURE;
+    goto cleanup;
+  }
+
+  if (addstring) {
+    dbhdr->count++;
+    employees = realloc(employees, dbhdr->count*sizeof(struct employee_t));
+    add_employee(dbhdr, employees, addstring);
+  }
+
+  if (output_file(dbfd, dbhdr, employees) == STATUS_ERROR) {
     printf("Failed to write database header\n");
     ret = EXIT_FAILURE;
     goto cleanup;
