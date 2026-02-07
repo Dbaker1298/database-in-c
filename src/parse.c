@@ -9,7 +9,7 @@
 #include "common.h"
 #include "parse.h"
 
-void output_file(int fd, struct dbheader_t *dbhdr) {
+int output_file(int fd, struct dbheader_t *dbhdr) {
   if (fd < 0) {
     printf("Got a bad FD from the user\n");
     return STATUS_ERROR;
@@ -20,10 +20,17 @@ void output_file(int fd, struct dbheader_t *dbhdr) {
   dbhdr->count = htons(dbhdr->count);
   dbhdr->version = htons(dbhdr->version);
 
-  lseek(fd, 0, SEEK_SET);
+  if (lseek(fd, 0, SEEK_SET) == -1) {
+    perror("lseek");
+    return STATUS_ERROR;
+  }
 
-  write(fd, dbhdr, sizeof(struct dbheader_t));
+  if (write(fd, dbhdr, sizeof(struct dbheader_t)) != sizeof(struct dbheader_t)) {
+    perror("write");
+    return STATUS_ERROR;
+  }
 
+  return STATUS_SUCCESS;
 }
 
 int validate_db_header(int fd, struct dbheader_t **headerOut) {
