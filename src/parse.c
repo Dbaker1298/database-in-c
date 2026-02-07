@@ -15,14 +15,18 @@ void output_file(int fd, struct dbheader_t *dbhdr) {
     return STATUS_ERROR;
   }
 
-  dbhdr->magic = htonl(dbhdr->magic);
-  dbhdr->filesize = htonl(dbhdr->filesize);
-  dbhdr->count = htons(dbhdr->count);
-  dbhdr->version = htons(dbhdr->version);
+  // Create a copy to avoid mutating the caller's header
+  struct dbheader_t header_copy = *dbhdr;
+  
+  // Convert the copy to network byte order
+  header_copy.magic = htonl(header_copy.magic);
+  header_copy.filesize = htonl(header_copy.filesize);
+  header_copy.count = htons(header_copy.count);
+  header_copy.version = htons(header_copy.version);
 
   lseek(fd, 0, SEEK_SET);
 
-  write(fd, dbhdr, sizeof(struct dbheader_t));
+  write(fd, &header_copy, sizeof(struct dbheader_t));
 
 }
 
