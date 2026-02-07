@@ -33,8 +33,8 @@ int validate_db_header(int fd, struct dbheader_t **headerOut) {
   }
 
   struct dbheader_t *header = calloc(1, sizeof(struct dbheader_t));
-  if (header == -1) {
-    printf("Malloc failed to create the db header\n");
+  if (header == NULL) {
+    printf("calloc failed to create the db header\n");
     return STATUS_ERROR;
   }
 
@@ -75,7 +75,7 @@ int validate_db_header(int fd, struct dbheader_t **headerOut) {
 int create_db_header(int fd, struct dbheader_t **headerOut) {
   struct dbheader_t *header = calloc(1, sizeof(struct dbheader_t));
   if (header == NULL) {
-    printf("Malloc failed to create the db header\n");
+    printf("calloc failed to create the db header\n");
     return STATUS_ERROR;
   }
 
