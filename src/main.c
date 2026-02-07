@@ -110,6 +110,7 @@ int main(int argc, char *argv[]) {
     dbhdr->count = new_count;
     if (add_employee(dbhdr, employees, addstring) == STATUS_ERROR) {
       printf("Failed to add employee\n");
+      dbhdr->count--; // Revert count increment on failure
       ret = EXIT_FAILURE;
       goto cleanup;
     }
