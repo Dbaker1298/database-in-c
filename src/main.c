@@ -99,9 +99,20 @@ int main(int argc, char *argv[]) {
   }
 
   if (addstring) {
-    dbhdr->count++;
-    employees = realloc(employees, dbhdr->count*sizeof(struct employee_t));
-    add_employee(dbhdr, employees, addstring);
+    size_t new_count = dbhdr->count + 1;
+    struct employee_t *tmp = realloc(employees, new_count * sizeof(struct employee_t));
+    if (tmp == NULL) {
+      printf("Failed to allocate memory for new employee\n");
+      ret = EXIT_FAILURE;
+      goto cleanup;
+    }
+    employees = tmp;
+    dbhdr->count = new_count;
+    if (add_employee(dbhdr, employees, addstring) == STATUS_ERROR) {
+      printf("Failed to add employee\n");
+      ret = EXIT_FAILURE;
+      goto cleanup;
+    }
   }
 
   if (output_file(dbfd, dbhdr, employees) == STATUS_ERROR) {
