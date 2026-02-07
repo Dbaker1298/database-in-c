@@ -13,7 +13,7 @@ int create_db_file(char *filename) {
     if (errno == EEXIST) {
       printf("File already exists!\n");
     } else {
-      perror("open");
+      perror("Failed to create database file");
     }
     return STATUS_ERROR;
   }
@@ -24,7 +24,7 @@ int create_db_file(char *filename) {
 int open_db_file(char *filename) {
   int fd = open(filename, O_RDWR);
   if (fd == -1) {
-    perror("open");
+    perror("Failed to open database file");
     return STATUS_ERROR;
   }
 
