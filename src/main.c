@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include <unistd.h>
 
 #include "common.h"
 #include "file.h"
@@ -64,5 +65,6 @@ int main(int argc, char *argv[]) {
   printf("Newfile: %d\n", newfile);
   printf("Filepath: %s\n", filepath);
 
+  close(dbfd);
   return 0;
 }
