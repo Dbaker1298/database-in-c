@@ -38,6 +38,12 @@ int validate_db_header(int fd, struct dbheader_t **headerOut) {
     return STATUS_ERROR;
   }
 
+  if (lseek(fd, 0, SEEK_SET) == -1) {
+    perror("lseek");
+    free(header);
+    return STATUS_ERROR;
+  }
+
   if (read(fd, header, sizeof(struct dbheader_t)) != sizeof(struct dbheader_t)) {
    perror("read");
    free(header);
@@ -62,7 +68,11 @@ int validate_db_header(int fd, struct dbheader_t **headerOut) {
   }
 
   struct stat dbstat = {0};
-  fstat(fd, &dbstat);
+  if (fstat(fd, &dbstat) == -1) {
+    perror("fstat");
+    free(header);
+    return STATUS_ERROR;
+  }
   if (header->filesize != dbstat.st_size) {
     printf("Corrupted database!\n");
     free(header);
