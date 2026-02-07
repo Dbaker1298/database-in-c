@@ -107,6 +107,7 @@ int main(int argc, char *argv[]) {
       goto cleanup;
     }
     employees = tmp;
+    // dbhdr->count is the next available index (0-based) for the new employee
     if (add_employee(dbhdr, employees, addstring, dbhdr->count) == STATUS_ERROR) {
       printf("Failed to add employee\n");
       ret = EXIT_FAILURE;
