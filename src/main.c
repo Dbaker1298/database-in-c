@@ -87,5 +87,5 @@ int main(int argc, char *argv[]) {
   }
 
   close(dbfd);
-  return 0;
+  return EXIT_SUCCESS;
 }
