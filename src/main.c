@@ -117,5 +117,8 @@ cleanup:
   if (dbhdr != NULL) {
     free(dbhdr);
   }
+  if (employees != NULL) {
+    free(employees);
+  }
   return ret;
 }
