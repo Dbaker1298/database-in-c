@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include <unistd.h>
 
 #include "common.h"
 #include "file.h"
@@ -16,6 +18,7 @@ int main(int argc, char *argv[]) {
   char *filepath = NULL;
   bool newfile = false;
   int c;
+  int dbfd = -1;
 
   while ((c = getopt(argc, argv, "nf:")) != -1) {
     switch (c) {
@@ -27,15 +30,15 @@ int main(int argc, char *argv[]) {
         if (filepath == NULL || filepath[0] == '\0') {
           printf("Filepath cannot be empty\n");
           print_usage(argv);
-          return 1;
+          return EXIT_FAILURE;
         }
         break;
       case '?':
         printf("Unknown option -%c\n", optopt);
         print_usage(argv);
-        return -1;
+        return EXIT_FAILURE;
       default:
-        return -1;
+        return EXIT_FAILURE;
     }
   }
 
@@ -43,11 +46,26 @@ int main(int argc, char *argv[]) {
     printf("Filepath is a required argument\n");
     print_usage(argv);
 
-    return 1;
+    return EXIT_FAILURE;
+  }
+
+  if (newfile) {
+     dbfd = create_db_file(filepath);
+     if (dbfd == STATUS_ERROR) {
+       printf("Unable to create database file\n");
+       return EXIT_FAILURE;
+     }
+  } else {
+    dbfd = open_db_file(filepath);
+    if (dbfd == STATUS_ERROR) {
+      printf("Unable to open database file\n");
+      return EXIT_FAILURE;
+    }
   }
 
   printf("Newfile: %d\n", newfile);
   printf("Filepath: %s\n", filepath);
 
+  close(dbfd);
   return 0;
 }
