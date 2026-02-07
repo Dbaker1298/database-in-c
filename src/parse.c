@@ -9,7 +9,7 @@
 #include "common.h"
 #include "parse.h"
 
-int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *addstring) {
+int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *addstring, unsigned int index) {
   if (addstring == NULL) {
     printf("add_employee called with NULL addstring\n");
     return STATUS_ERROR;
@@ -17,11 +17,6 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *a
 
   if (dbhdr == NULL || employees == NULL) {
     printf("add_employee called with NULL dbhdr or employees\n");
-    return STATUS_ERROR;
-  }
-
-  if (dbhdr->count == 0) {
-    printf("add_employee called with count of 0\n");
     return STATUS_ERROR;
   }
 
@@ -46,9 +41,9 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *a
 
   printf("Verifying name, addr, hours: %s %s %s\n", name, addr, hours);
 
-  snprintf(employees[dbhdr->count-1].name, sizeof(employees[dbhdr->count-1].name), "%s", name);
-  snprintf(employees[dbhdr->count-1].address, sizeof(employees[dbhdr->count-1].address), "%s", addr);
-  employees[dbhdr->count-1].hours = atoi(hours);
+  snprintf(employees[index].name, sizeof(employees[index].name), "%s", name);
+  snprintf(employees[index].address, sizeof(employees[index].address), "%s", addr);
+  employees[index].hours = atoi(hours);
 
   free(input_copy);
 

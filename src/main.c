@@ -107,13 +107,12 @@ int main(int argc, char *argv[]) {
       goto cleanup;
     }
     employees = tmp;
-    dbhdr->count = new_count;
-    if (add_employee(dbhdr, employees, addstring) == STATUS_ERROR) {
+    if (add_employee(dbhdr, employees, addstring, dbhdr->count) == STATUS_ERROR) {
       printf("Failed to add employee\n");
-      dbhdr->count--; // Revert count increment on failure
       ret = EXIT_FAILURE;
       goto cleanup;
     }
+    dbhdr->count = new_count;
   }
 
   if (output_file(dbfd, dbhdr, employees) == STATUS_ERROR) {
