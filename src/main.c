@@ -17,8 +17,13 @@ void print_usage(char *argv[]) {
 int main(int argc, char *argv[]) {
   char *filepath = NULL;
   bool newfile = false;
+
   int c;
+
   int dbfd = -1;
+
+  struct dbheader_t *dbhdr = NULL;
+  int ret = EXIT_SUCCESS;
 
   while ((c = getopt(argc, argv, "nf:")) != -1) {
     switch (c) {
@@ -53,19 +58,45 @@ int main(int argc, char *argv[]) {
      dbfd = create_db_file(filepath);
      if (dbfd == STATUS_ERROR) {
        printf("Unable to create database file\n");
-       return EXIT_FAILURE;
+       ret = EXIT_FAILURE;
+       goto cleanup;
+     }
+
+     if (create_db_header(dbfd, &dbhdr) == STATUS_ERROR) {
+       printf("Failed to create database header\n");
+       ret = EXIT_FAILURE;
+       goto cleanup;
      }
   } else {
     dbfd = open_db_file(filepath);
     if (dbfd == STATUS_ERROR) {
       printf("Unable to open database file\n");
-      return EXIT_FAILURE;
+      ret = EXIT_FAILURE;
+      goto cleanup;
+    }
+
+    if (validate_db_header(dbfd, &dbhdr) == STATUS_ERROR) {
+      printf("Failed to validate database header\n");
+      ret = EXIT_FAILURE;
+      goto cleanup;
     }
   }
 
   printf("Newfile: %d\n", newfile);
   printf("Filepath: %s\n", filepath);
 
-  close(dbfd);
-  return 0;
+  if (output_file(dbfd, dbhdr) == STATUS_ERROR) {
+    printf("Failed to write database header\n");
+    ret = EXIT_FAILURE;
+    goto cleanup;
+  }
+
+cleanup:
+  if (dbfd != -1) {
+    close(dbfd);
+  }
+  if (dbhdr != NULL) {
+    free(dbhdr);
+  }
+  return ret;
 }
