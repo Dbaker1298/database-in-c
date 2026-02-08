@@ -83,7 +83,9 @@ This repository contains a lightweight database implementation in C. Follow thes
 - Handle file existence errors appropriately
 
 ## Comments
-- Use single-line comments (`//`) sparingly - code should be self-documenting
+- The project compiles with modern C standards (C99 or later)
+- Both `//` single-line and `/* */` multi-line comment styles are acceptable
+- Use comments sparingly - code should be self-documenting
 - Avoid stating the obvious in comments
 - Only add comments for complex logic or non-obvious behavior
 - Keep comments concise and up-to-date with code changes
