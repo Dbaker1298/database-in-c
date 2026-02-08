@@ -29,6 +29,7 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *a
     return STATUS_ERROR;
   }
 
+  // strtok: extract tokens from strings
   char *name = strtok(input_copy, ",");
   char *addr = strtok(NULL, ",");
   char *hours = strtok(NULL, ",");
@@ -41,10 +42,12 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *a
 
   printf("Verifying name, addr, hours: %s %s %s\n", name, addr, hours);
 
+  // snprintf() writes at most `size` bytes (including the terminating null byte ('\0')) to str.
   snprintf(employees[index].name, sizeof(employees[index].name), "%s", name);
   snprintf(employees[index].address, sizeof(employees[index].address), "%s", addr);
   
   /* Use strtoul for better error handling and validation */
+  // strtoul(): convert a string to an unsigned long integer
   char *endptr;
   unsigned long hours_val = strtoul(hours, &endptr, 10);
   
