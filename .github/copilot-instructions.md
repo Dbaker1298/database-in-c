@@ -13,7 +13,7 @@ This repository contains a lightweight database implementation in C. Follow thes
 ### Naming Conventions
 - Use lowercase with underscores for functions: `create_db_file()`, `validate_db_header()`
 - Use lowercase with underscores for variable names: `newfile`, `filepath`
-- Use `_t` suffix for struct tags/types: `struct dbheader_t`, ``
+- Use `_t` suffix for struct tags/types: `struct dbheader_t`, `dbheader_t`
 - Use ALL_CAPS for preprocessor macros: `STATUS_ERROR`, `STATUS_SUCCESS`
 
 ### Header Files
