@@ -23,6 +23,7 @@ int main(int argc, char *argv[]) {
   char *addstring = NULL;
 
   bool newfile = false;
+  bool list = false;
 
   int c;
 
@@ -33,7 +34,7 @@ int main(int argc, char *argv[]) {
 
   int ret = EXIT_SUCCESS;
 
-  while ((c = getopt(argc, argv, "nf:a:")) != -1) {
+  while ((c = getopt(argc, argv, "nf:a:l")) != -1) {
     switch (c) {
       case 'n':
         newfile = true;
@@ -48,6 +49,9 @@ int main(int argc, char *argv[]) {
         break;
       case 'a':
         addstring = optarg;
+        break;
+      case 'l':
+        list = true;
         break;
       case '?':
         printf("Unknown option -%c\n", optopt);
@@ -118,6 +122,10 @@ int main(int argc, char *argv[]) {
       goto cleanup;
     }
     dbhdr->count = new_count;
+  }
+
+  if (list) {
+    list_employees(dbhdr, employees);
   }
 
   if (output_file(dbfd, dbhdr, employees) == STATUS_ERROR) {
