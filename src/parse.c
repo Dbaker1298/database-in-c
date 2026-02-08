@@ -22,8 +22,6 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *a
     return STATUS_ERROR;
   }
 
-  printf("Did we get the string?: %s\n", addstring);
-
   /* Work on a local copy so we don't modify the caller's buffer */
   char *input_copy = strdup(addstring);
   if (input_copy == NULL) {
