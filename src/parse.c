@@ -79,25 +79,23 @@ int read_employees(int fd, struct dbheader_t *dbhdr, struct employee_t **employe
 
   int count = dbhdr->count;
 
+  /* Reject negative counts and counts that would overflow a size_t multiplication */
+  if (count < 0 || (size_t)count > SIZE_MAX / sizeof(struct employee_t)) {
+    printf("Employee count too large or invalid, would cause integer overflow\n");
+    return STATUS_ERROR;
+  }
+
   /* Handle zero employees explicitly: no allocation needed */
   if (count == 0) {
     *employeesOut = NULL;
     return STATUS_SUCCESS;
   }
 
-  struct employee_t *employees = calloc(count, sizeof(struct employee_t));
+  struct employee_t *employees = calloc((size_t)count, sizeof(struct employee_t));
   if (employees == NULL) {
     printf("Failed to allocate memory for employee records\n");
     return STATUS_ERROR;
   }
-
-  /* Check for potential integer overflow before multiplication */
-  if (count > SIZE_MAX / sizeof(struct employee_t)) {
-    printf("Employee count too large, would cause integer overflow\n");
-    free(employees);
-    return STATUS_ERROR;
-  }
-
   /* Validate that we read exactly the expected number of bytes */
   size_t total_bytes = (size_t)count * sizeof(struct employee_t);
   ssize_t bytes_read = read(fd, employees, total_bytes);
