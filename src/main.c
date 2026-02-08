@@ -23,6 +23,8 @@ int main(int argc, char *argv[]) {
   char *addstring = NULL;
 
   bool newfile = false;
+  bool list = false;
+  bool has_mutations = false;
 
   int c;
 
@@ -33,7 +35,7 @@ int main(int argc, char *argv[]) {
 
   int ret = EXIT_SUCCESS;
 
-  while ((c = getopt(argc, argv, "nf:a:")) != -1) {
+  while ((c = getopt(argc, argv, "nf:a:l")) != -1) {
     switch (c) {
       case 'n':
         newfile = true;
@@ -48,6 +50,9 @@ int main(int argc, char *argv[]) {
         break;
       case 'a':
         addstring = optarg;
+        break;
+      case 'l':
+        list = true;
         break;
       case '?':
         printf("Unknown option -%c\n", optopt);
@@ -65,6 +70,9 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
+  // Determine if any mutation operations will occur
+  has_mutations = newfile || (addstring != NULL);
+
   if (newfile) {
      dbfd = create_db_file(filepath);
      if (dbfd == STATUS_ERROR) {
@@ -79,7 +87,12 @@ int main(int argc, char *argv[]) {
        goto cleanup;
      }
   } else {
-    dbfd = open_db_file(filepath);
+    // Open read-only if no mutations will occur
+    if (!has_mutations) {
+      dbfd = open_db_file_readonly(filepath);
+    } else {
+      dbfd = open_db_file(filepath);
+    }
     if (dbfd == STATUS_ERROR) {
       printf("Unable to open database file\n");
       ret = EXIT_FAILURE;
@@ -120,10 +133,17 @@ int main(int argc, char *argv[]) {
     dbhdr->count = new_count;
   }
 
-  if (output_file(dbfd, dbhdr, employees) == STATUS_ERROR) {
-    printf("Failed to write database header\n");
-    ret = EXIT_FAILURE;
-    goto cleanup;
+  if (list) {
+    list_employees(dbhdr, employees);
+  }
+
+  // Only write to file if mutations occurred
+  if (has_mutations) {
+    if (output_file(dbfd, dbhdr, employees) == STATUS_ERROR) {
+      printf("Failed to write database header\n");
+      ret = EXIT_FAILURE;
+      goto cleanup;
+    }
   }
 
   printf("File size from dbhdr->count: %d\n", dbhdr->count);

@@ -11,6 +11,17 @@
 #include "common.h"
 #include "parse.h"
 
+void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
+  int i = 0;
+  for (; i < dbhdr->count; i++) {
+    printf("Employee index: %d\n", i);
+    printf("\tName: %s\n", employees[i].name);
+    printf("\tAddress: %s\n", employees[i].address);
+    printf("\tHours: %u\n", employees[i].hours);
+    printf("\n");
+  }
+}
+
 int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *addstring, unsigned int index) {
   if (addstring == NULL) {
     printf("add_employee called with NULL addstring\n");
@@ -40,7 +51,7 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *a
     return STATUS_ERROR;
   }
 
-  printf("Verifying name, addr, hours: %s %s %s\n", name, addr, hours);
+  printf("[Verifying add_employee] name, addr, hours: %s | %s | %s\n", name, addr, hours);
 
   // snprintf() writes at most `size` bytes (including the terminating null byte ('\0')) to str.
   snprintf(employees[index].name, sizeof(employees[index].name), "%s", name);
