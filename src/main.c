@@ -83,7 +83,12 @@ int main(int argc, char *argv[]) {
        goto cleanup;
      }
   } else {
-    dbfd = open_db_file(filepath);
+    // Open read-only if we're only listing (no mutations)
+    if (list && !addstring) {
+      dbfd = open_db_file_readonly(filepath);
+    } else {
+      dbfd = open_db_file(filepath);
+    }
     if (dbfd == STATUS_ERROR) {
       printf("Unable to open database file\n");
       ret = EXIT_FAILURE;
@@ -128,10 +133,13 @@ int main(int argc, char *argv[]) {
     list_employees(dbhdr, employees);
   }
 
-  if (output_file(dbfd, dbhdr, employees) == STATUS_ERROR) {
-    printf("Failed to write database header\n");
-    ret = EXIT_FAILURE;
-    goto cleanup;
+  // Only write to file if we created a new file or added an employee
+  if (newfile || addstring) {
+    if (output_file(dbfd, dbhdr, employees) == STATUS_ERROR) {
+      printf("Failed to write database header\n");
+      ret = EXIT_FAILURE;
+      goto cleanup;
+    }
   }
 
   printf("File size from dbhdr->count: %d\n", dbhdr->count);
