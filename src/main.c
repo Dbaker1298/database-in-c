@@ -9,13 +9,18 @@
 #include "parse.h"
 
 void print_usage(char *argv[]) {
-  printf("Usage: %s -n -f <database_file>\n", argv[0]);
+  printf("Usage: %s [-n] -f <database_file> [-a <employee_data>]\n", argv[0]);
   printf("\t -n - create new database file\n");
   printf("\t -f - (required) path to database file\n");
+  printf("\t -a - (optional) append an employee in format: name,address,hours\n");
+  printf("\t      when used with -n, the employee is added to the newly created database;\n");
+  printf("\t      otherwise, the employee is appended to the existing database\n");
 }
 
 int main(int argc, char *argv[]) {
   char *filepath = NULL;
+  char *addstring = NULL;
+
   bool newfile = false;
 
   int c;
@@ -23,9 +28,11 @@ int main(int argc, char *argv[]) {
   int dbfd = -1;
 
   struct dbheader_t *dbhdr = NULL;
+  struct employee_t *employees = NULL;
+
   int ret = EXIT_SUCCESS;
 
-  while ((c = getopt(argc, argv, "nf:")) != -1) {
+  while ((c = getopt(argc, argv, "nf:a:")) != -1) {
     switch (c) {
       case 'n':
         newfile = true;
@@ -37,6 +44,9 @@ int main(int argc, char *argv[]) {
           print_usage(argv);
           return EXIT_FAILURE;
         }
+        break;
+      case 'a':
+        addstring = optarg;
         break;
       case '?':
         printf("Unknown option -%c\n", optopt);
@@ -85,7 +95,31 @@ int main(int argc, char *argv[]) {
   printf("Newfile: %d\n", newfile);
   printf("Filepath: %s\n", filepath);
 
-  if (output_file(dbfd, dbhdr) == STATUS_ERROR) {
+  if (read_employees(dbfd, dbhdr, &employees) == STATUS_ERROR) {
+    printf("Failed to read employees\n");
+    ret = EXIT_FAILURE;
+    goto cleanup;
+  }
+
+  if (addstring) {
+    size_t new_count = dbhdr->count + 1;
+    struct employee_t *tmp = realloc(employees, new_count * sizeof(struct employee_t));
+    if (tmp == NULL) {
+      printf("Failed to allocate memory for new employee\n");
+      ret = EXIT_FAILURE;
+      goto cleanup;
+    }
+    employees = tmp;
+    // dbhdr->count is the next available index (0-based) for the new employee
+    if (add_employee(dbhdr, employees, addstring, dbhdr->count) == STATUS_ERROR) {
+      printf("Failed to add employee\n");
+      ret = EXIT_FAILURE;
+      goto cleanup;
+    }
+    dbhdr->count = new_count;
+  }
+
+  if (output_file(dbfd, dbhdr, employees) == STATUS_ERROR) {
     printf("Failed to write database header\n");
     ret = EXIT_FAILURE;
     goto cleanup;
@@ -97,6 +131,9 @@ cleanup:
   }
   if (dbhdr != NULL) {
     free(dbhdr);
+  }
+  if (employees != NULL) {
+    free(employees);
   }
   return ret;
 }
