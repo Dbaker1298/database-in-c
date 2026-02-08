@@ -13,7 +13,7 @@ This repository contains a lightweight database implementation in C. Follow thes
 ### Naming Conventions
 - Use lowercase with underscores for functions: `create_db_file()`, `validate_db_header()`
 - Use lowercase with underscores for variable names: `newfile`, `filepath`
-- Use `_t` suffix for typedef'd structs: `struct dbheader_t`
+- Use `_t` suffix for struct tags/types: `struct dbheader_t`, ``
 - Use ALL_CAPS for preprocessor macros: `STATUS_ERROR`, `STATUS_SUCCESS`
 
 ### Header Files
@@ -36,7 +36,7 @@ This repository contains a lightweight database implementation in C. Follow thes
 ### Makefile
 - The project uses a Makefile for building
 - Build the project with: `make`
-- Clean build artifacts with: `make clean`
+- Clean build artifacts with: `make clean` (note: the current Makefile removes `bin/` artifacts and `obj/*.ob` files; `.o` object files in `obj/` are **not** removed due to a typo and must be deleted manually or after fixing the Makefile)
 - Build and run with: `make run`
 - Compiled binaries go in `bin/` directory
 - Object files go in `obj/` directory
