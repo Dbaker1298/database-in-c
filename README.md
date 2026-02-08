@@ -2,9 +2,9 @@
 
 ## Overview
 
-This repository contains a lightweight employee database implementation in C, demonstrating fundamental database concepts including file I/O, data serialization, and CRUD operations.
+This repository contains a lightweight employee database implementation in C that demonstrates fundamental database concepts, including file I/O, data serialization, and CRUD operations.
 
-## Current Implementation (CH2)
+## Current Implementation
 
 The current codebase implements a fully functional binary database system with the following features:
 
@@ -34,7 +34,7 @@ The current codebase implements a fully functional binary database system with t
 4. **Command-Line Interface** (`main.c`)
    - `-n`: Create a new database file
    - `-f <file>`: Specify database file path (required)
-   - `-a <name,address,hours>`: Add an employee
+   - `-a <name, address, hours>`: Add an employee
    - `-l`: List all employees
    - Automatic read-only mode optimization when no mutations occur
 
