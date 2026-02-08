@@ -9,9 +9,10 @@
 #include "parse.h"
 
 void print_usage(char *argv[]) {
-  printf("Usage: %s -n -f <database_file>\n", argv[0]);
+  printf("Usage: %s -n -f <database_file> -a <employee_data>\n", argv[0]);
   printf("\t -n - create new database file\n");
   printf("\t -f - (required) path to database file\n");
+  printf("\t -a - add an employee in format: name,address,hours\n");
 }
 
 int main(int argc, char *argv[]) {
