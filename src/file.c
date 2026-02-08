@@ -31,3 +31,13 @@ int open_db_file(const char *filename) {
   return fd;
 }
 
+int open_db_file_readonly(const char *filename) {
+  int fd = open(filename, O_RDONLY);
+  if (fd == -1) {
+    perror("Failed to open database file");
+    return STATUS_ERROR;
+  }
+
+  return fd;
+}
+

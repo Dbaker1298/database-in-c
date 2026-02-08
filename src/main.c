@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
 
   bool newfile = false;
   bool list = false;
+  bool has_mutations = false;
 
   int c;
 
@@ -69,6 +70,9 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
+  // Determine if any mutation operations will occur
+  has_mutations = newfile || (addstring != NULL);
+
   if (newfile) {
      dbfd = create_db_file(filepath);
      if (dbfd == STATUS_ERROR) {
@@ -83,7 +87,12 @@ int main(int argc, char *argv[]) {
        goto cleanup;
      }
   } else {
-    dbfd = open_db_file(filepath);
+    // Open read-only if no mutations will occur
+    if (!has_mutations) {
+      dbfd = open_db_file_readonly(filepath);
+    } else {
+      dbfd = open_db_file(filepath);
+    }
     if (dbfd == STATUS_ERROR) {
       printf("Unable to open database file\n");
       ret = EXIT_FAILURE;
@@ -128,10 +137,13 @@ int main(int argc, char *argv[]) {
     list_employees(dbhdr, employees);
   }
 
-  if (output_file(dbfd, dbhdr, employees) == STATUS_ERROR) {
-    printf("Failed to write database header\n");
-    ret = EXIT_FAILURE;
-    goto cleanup;
+  // Only write to file if mutations occurred
+  if (has_mutations) {
+    if (output_file(dbfd, dbhdr, employees) == STATUS_ERROR) {
+      printf("Failed to write database header\n");
+      ret = EXIT_FAILURE;
+      goto cleanup;
+    }
   }
 
   printf("File size from dbhdr->count: %d\n", dbhdr->count);
