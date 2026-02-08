@@ -14,7 +14,7 @@
 void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
   int i = 0;
   for (; i < dbhdr->count; i++) {
-    printf("Employee ID: %d\n", i);
+    printf("Employee index: %d\n", i);
     printf("\tName: %s\n", employees[i].name);
     printf("\tAddress: %s\n", employees[i].address);
     printf("\tHours: %u\n", employees[i].hours);
